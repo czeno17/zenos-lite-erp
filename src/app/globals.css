@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Light mode (default) */
+:root {
+  --bg-base: #ffffff;
+  --bg-surface: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --border: #e5e7eb;
+}
+
+/* Soft dark mode – no pure blacks, lower contrast */
+.dark {
+  --bg-base: #0f172a;     /* deep slate, not pure black */
+  --bg-surface: #1e293b;  /* slightly lighter for cards */
+  --text-primary: #e2e8f0; /* soft off‑white */
+  --text-secondary: #94a3b8;
+  --border: #334155;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.card, .bg-white, .bg-gray-50 {
+  background-color: var(--bg-surface);
+  border-color: var(--border);
+}
+
+.text-gray-900, .text-gray-700, .text-gray-800 {
+  color: var(--text-primary);
+}
+
+.text-gray-500, .text-gray-600 {
+  color: var(--text-secondary);
+}
+/* Force better readability for all dashboard alerts */
+.dark .bg-white,
+.dark .rounded-lg,
+.dark .shadow-sm {
+  background-color: #1e293b !important;
+}
+
+.dark p, .dark span, .dark div, .dark h1, .dark h2, .dark h3, .dark td, .dark th {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-gray-500, .dark .text-gray-400 {
+  color: #94a3b8 !important;
+}
+
+.dark .font-bold, .dark .font-semibold, .dark .font-medium {
+  color: #ffffff !important;
+}
+/* Force readable text in dark mode for all dashboard cards */
+.dark .bg-white,
+.dark .rounded-lg,
+.dark .rounded-xl,
+.dark .shadow-sm {
+  background-color: #1e293b !important; /* solid dark slate */
+}
+
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .font-medium,
+.dark .font-semibold,
+.dark .font-bold,
+.dark p,
+.dark span,
+.dark div:not(.bg-*),
+.dark td,
+.dark th {
+  color: #f1f5f9 !important; /* bright off-white */
+}
+
+.dark .text-gray-500,
+.dark .text-gray-400,
+.dark .text-muted-foreground,
+.dark .text-xs,
+.dark .text-sm.text-gray-500 {
+  color: #cbd5e1 !important; /* lighter gray, readable */
+}
+
+.dark .border,
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: #334155 !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: #334155 !important;
+}
