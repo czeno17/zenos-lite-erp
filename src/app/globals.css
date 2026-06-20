@@ -17,9 +17,9 @@
 
 /* Soft dark mode – no pure blacks, lower contrast */
 .dark {
-  --bg-base: #0f172a;     /* deep slate, not pure black */
-  --bg-surface: #1e293b;  /* slightly lighter for cards */
-  --text-primary: #e2e8f0; /* soft off‑white */
+  --bg-base: #0f172a;
+  --bg-surface: #1e293b;
+  --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
   --border: #334155;
 }
@@ -29,42 +29,32 @@ body {
   color: var(--text-primary);
 }
 
-.card, .bg-white, .bg-gray-50 {
+/* Card and surface styles */
+.card,
+.bg-white,
+.bg-gray-50 {
   background-color: var(--bg-surface);
   border-color: var(--border);
 }
 
-.text-gray-900, .text-gray-700, .text-gray-800 {
+/* Text colors */
+.text-gray-900,
+.text-gray-700,
+.text-gray-800 {
   color: var(--text-primary);
 }
 
-.text-gray-500, .text-gray-600 {
+.text-gray-500,
+.text-gray-600 {
   color: var(--text-secondary);
 }
-/* Force better readability for all dashboard alerts */
-.dark .bg-white,
-.dark .rounded-lg,
-.dark .shadow-sm {
-  background-color: #1e293b !important;
-}
 
-.dark p, .dark span, .dark div, .dark h1, .dark h2, .dark h3, .dark td, .dark th {
-  color: #e2e8f0 !important;
-}
-
-.dark .text-gray-500, .dark .text-gray-400 {
-  color: #94a3b8 !important;
-}
-
-.dark .font-bold, .dark .font-semibold, .dark .font-medium {
-  color: #ffffff !important;
-}
-/* Force readable text in dark mode for all dashboard cards */
+/* Dark mode overrides for readability */
 .dark .bg-white,
 .dark .rounded-lg,
 .dark .rounded-xl,
 .dark .shadow-sm {
-  background-color: #1e293b !important; /* solid dark slate */
+  background-color: #1e293b !important;
 }
 
 .dark .text-gray-900,
@@ -75,10 +65,13 @@ body {
 .dark .font-bold,
 .dark p,
 .dark span,
-.dark div:not(.bg-*),
 .dark td,
-.dark th {
-  color: #f1f5f9 !important; /* bright off-white */
+.dark th,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4 {
+  color: #f1f5f9 !important;
 }
 
 .dark .text-gray-500,
@@ -86,7 +79,7 @@ body {
 .dark .text-muted-foreground,
 .dark .text-xs,
 .dark .text-sm.text-gray-500 {
-  color: #cbd5e1 !important; /* lighter gray, readable */
+  color: #cbd5e1 !important;
 }
 
 .dark .border,
