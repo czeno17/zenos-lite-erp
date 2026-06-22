@@ -1,9 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Card, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Select } from '../../components/ui/Select';
+import { formatPHP } from '../../lib/utils';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -12,7 +13,6 @@ export default function OrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState('');
   const [cart, setCart] = useState([]);
-  const [availableProducts, setAvailableProducts] = useState([]);
 
   useEffect(() => {
     fetchOrders();
@@ -23,10 +23,7 @@ export default function OrdersPage() {
   async function fetchOrders() {
     const { data } = await supabase
       .from('orders')
-      .select(`
-        *,
-        customers (name)
-      `)
+      .select('*, customers(name)')
       .order('order_date', { ascending: false });
     if (data) setOrders(data);
   }
@@ -66,11 +63,7 @@ export default function OrdersPage() {
     } else {
       setCart(cart.map(item =>
         item.product_id === productId
-          ? {
-              ...item,
-              quantity: newQuantity,
-              total_price: newQuantity * item.unit_price
-            }
+          ? { ...item, quantity: newQuantity, total_price: newQuantity * item.unit_price }
           : item
       ));
     }
@@ -82,27 +75,16 @@ export default function OrdersPage() {
 
   async function submitOrder() {
     if (!selectedCustomer || cart.length === 0) {
-      alert('Please select a customer and add items to the order');
+      alert('Please select a customer and add items');
       return;
     }
-
     const totalAmount = cart.reduce((sum, item) => sum + item.total_price, 0);
-
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .insert([{
-        customer_id: selectedCustomer,
-        total_amount: totalAmount,
-        status: 'pending'
-      }])
+      .insert([{ customer_id: selectedCustomer, total_amount: totalAmount, status: 'pending' }])
       .select()
       .single();
-
-    if (orderError) {
-      console.error('Error creating order:', orderError);
-      return;
-    }
-
+    if (orderError) { console.error(orderError); return; }
     const orderItems = cart.map(item => ({
       order_id: order.id,
       product_id: item.product_id,
@@ -110,13 +92,7 @@ export default function OrdersPage() {
       unit_price: item.unit_price,
       total_price: item.total_price
     }));
-
-    const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
-    if (itemsError) {
-      console.error('Error adding order items:', itemsError);
-      return;
-    }
-
+    await supabase.from('order_items').insert(orderItems);
     for (const item of cart) {
       const product = products.find(p => p.id === item.product_id);
       const newStock = product.stock_quantity - item.quantity;
@@ -128,7 +104,6 @@ export default function OrdersPage() {
         reason: 'Sale'
       }]);
     }
-
     setIsModalOpen(false);
     setSelectedCustomer('');
     setCart([]);
@@ -143,57 +118,55 @@ export default function OrdersPage() {
       </div>
       <Card>
         <CardContent className="p-6">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left p-2">Order ID</th>
-                <th className="text-left p-2">Customer</th>
-                <th className="text-left p-2">Date</th>
-                <th className="text-left p-2">Total</th>
-                <th className="text-left p-2">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} className="border-b">
-                  <td className="p-2">{order.id.slice(0, 8)}...</td>
-                  <td className="p-2">{order.customers?.name}</td>
-                  <td className="p-2">{new Date(order.order_date).toLocaleDateString()}</td>
-                  <td className="p-2">${order.total_amount}</td>
-                  <td className="p-2">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {order.status}
-                    </span>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-2">Order ID</th>
+                  <th className="text-left p-2">Customer</th>
+                  <th className="text-left p-2">Date</th>
+                  <th className="text-left p-2">Total</th>
+                  <th className="text-left p-2">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {orders.map(order => (
+                  <tr key={order.id} className="border-b">
+                    <td className="p-2">{order.id.slice(0,8)}...</td>
+                    <td className="p-2">{order.customers?.name}</td>
+                    <td className="p-2">{new Date(order.order_date).toLocaleDateString()}</td>
+                    <td className="p-2">{formatPHP(order.total_amount)}</td>
+                    <td className="p-2">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {order.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-y-auto">
-          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Create New Order</h2>
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold mb-2">Products</h3>
                 <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {products.map((product) => (
+                  {products.map(product => (
                     <div key={product.id} className="flex justify-between items-center p-2 border rounded">
                       <div>
                         <div className="font-medium">{product.name}</div>
-                        <div className="text-sm text-gray-600">${product.price} | Stock: {product.stock_quantity}</div>
+                        <div className="text-sm text-gray-600">{formatPHP(product.price)} | Stock: {product.stock_quantity}</div>
                       </div>
-                      <Button
-                        size="sm"
-                        onClick={() => addToCart(product)}
-                        disabled={product.stock_quantity === 0}
-                      >
+                      <Button size="sm" onClick={() => addToCart(product)} disabled={product.stock_quantity === 0}>
                         Add
                       </Button>
                     </div>
@@ -203,15 +176,10 @@ export default function OrdersPage() {
               <div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-1">Customer</label>
-                  <Select
-                    value={selectedCustomer}
-                    onChange={(e) => setSelectedCustomer(e.target.value)}
-                  >
+                  <Select value={selectedCustomer} onChange={(e) => setSelectedCustomer(e.target.value)}>
                     <option value="">Select Customer</option>
-                    {customers.map((customer) => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.name}
-                      </option>
+                    {customers.map(customer => (
+                      <option key={customer.id} value={customer.id}>{customer.name}</option>
                     ))}
                   </Select>
                 </div>
@@ -220,11 +188,13 @@ export default function OrdersPage() {
                   <p className="text-gray-500">No items added</p>
                 ) : (
                   <div className="space-y-2">
-                    {cart.map((item) => (
+                    {cart.map(item => (
                       <div key={item.product_id} className="flex justify-between items-center p-2 border rounded">
                         <div>
                           <div className="font-medium">{item.product_name}</div>
-                          <div className="text-sm">${item.unit_price} x {item.quantity} = ${item.total_price}</div>
+                          <div className="text-sm">
+                            {formatPHP(item.unit_price)} x {item.quantity} = {formatPHP(item.total_price)}
+                          </div>
                         </div>
                         <div className="space-x-2">
                           <input
@@ -234,17 +204,14 @@ export default function OrdersPage() {
                             onChange={(e) => updateQuantity(item.product_id, parseInt(e.target.value) || 0)}
                             className="w-16 p-1 border rounded"
                           />
-                          <button
-                            onClick={() => removeFromCart(item.product_id)}
-                            className="text-red-600"
-                          >
+                          <button onClick={() => removeFromCart(item.product_id)} className="text-red-600">
                             Remove
                           </button>
                         </div>
                       </div>
                     ))}
                     <div className="pt-4 border-t">
-                      <div className="font-bold">Total: ${cart.reduce((sum, item) => sum + item.total_price, 0)}</div>
+                      <div className="font-bold">Total: {formatPHP(cart.reduce((sum, item) => sum + item.total_price, 0))}</div>
                     </div>
                   </div>
                 )}
