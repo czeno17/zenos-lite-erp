@@ -47,49 +47,62 @@ A modern, open‑source Inventory and Order Management System built for SMEs.
 ```bash
 git clone https://github.com/czeno17/zenos-lite-erp.git
 cd zenos-lite-erp
-2. Install dependencies
-bash
-npm install
-3. Set up environment variables
-Create a .env.local file in the root directory and add your Supabase credentials:
+```
 
-env
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Set up environment variables
+
+Create a `.env.local` file in the root directory and add your Supabase credentials:
+
+```env
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
 You can find these in your Supabase project → Settings → API.
 
-4. Set up the database
-Go to your Supabase project → SQL Editor.
+### 4. Set up the database
 
-Copy the contents of supabase/schema.sql (provided in the repo) and run the script.
+1. Go to your Supabase project → SQL Editor.
+2. Copy the contents of `supabase/schema.sql` (provided in the repo) and run the script.
+3. This creates all required tables (`products`, `customers`, `orders`, `order_items`, `stock_movements`, `suppliers`, `audit_logs`).
 
-This creates all required tables (products, customers, orders, order_items, stock_movements, suppliers, audit_logs).
+### 5. Run the development server
 
-5. Run the development server
-bash
+```bash
 npm run dev
-Open http://localhost:3000 to view the app.
+```
 
-🔐 Authentication
-Sign Up at /signup
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-Sign In at /login
+---
 
-Logout from the navbar icon (🚪)
+## 🔐 Authentication
 
-All routes (except login/signup) are protected – unauthenticated users are redirected to /login.
+- **Sign Up** at `/signup`
+- **Sign In** at `/login`
+- **Logout** from the navbar icon (🚪)
+- All routes (except login/signup) are protected – unauthenticated users are redirected to `/login`.
 
-☁️ Deploy to Vercel
-Push your code to a GitHub repository.
+---
 
-Go to Vercel and import your repo.
+## ☁️ Deploy to Vercel
 
-Add the same environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY) in Vercel's project settings.
+1. Push your code to a GitHub repository.
+2. Go to [Vercel](https://vercel.com) and import your repo.
+3. Add the same environment variables (`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`) in Vercel's project settings.
+4. Click **Deploy** – your app will be live in minutes.
 
-Click Deploy – your app will be live in minutes.
+---
 
-📁 Project Structure
-text
+## 📁 Project Structure
+
+```
 ├── src/
 │   ├── app/                    # Next.js App Router pages
 │   │   ├── (auth)/             # Login & Signup pages
@@ -117,22 +130,32 @@ text
 ├── .env.local                  # Environment variables (ignored)
 ├── package.json
 └── README.md
-🧪 Sample Data
-The schema.sql script includes sample products, customers, and orders to get you started. You can modify or delete them as needed.
+```
 
-🤝 Contributing
+---
+
+## 🧪 Sample Data
+
+The `schema.sql` script includes sample products, customers, and orders to get you started. You can modify or delete them as needed.
+
+---
+
+## 🤝 Contributing
+
 Contributions are welcome! Feel free to open issues or submit pull requests.
 
-📄 License
-MIT © czeno17
+---
 
-🙏 Acknowledgements
-Next.js
+## 📄 License
 
-Supabase
+MIT © [czeno17](https://github.com/czeno17)
 
-Tailwind CSS
+---
 
-Lucide Icons
+## 🙏 Acknowledgements
 
-Recharts
+- [Next.js](https://nextjs.org)
+- [Supabase](https://supabase.com)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Lucide Icons](https://lucide.dev)
+- [Recharts](https://recharts.org)
