@@ -11,17 +11,24 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
+
     try {
+      console.log('Attempting login with:', email);
       await signIn(email, password);
+      console.log('Login successful, redirecting...');
       router.push('/');
     } catch (err) {
-      setError(err.message);
+      console.error('Login error:', err);
+      setError(err.message || 'Invalid credentials');
+      setLoading(false);
     }
   };
 
@@ -49,7 +56,9 @@ export default function LoginPage() {
               required
             />
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button type="submit" className="w-full">Sign In</Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
           </form>
           <p className="text-center text-sm mt-4">
             Don't have an account?{' '}
